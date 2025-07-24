@@ -154,3 +154,120 @@ CREATE TABLE DetalleVenta (
     FOREIGN KEY (idVenta) REFERENCES Venta(idVenta),
     FOREIGN KEY (idProducto) REFERENCES Producto(idProductos)
 );
+ALTER TABLE DetalleVenta
+ADD Estado VARCHAR2(1) DEFAULT 'A';
+
+CREATE SEQUENCE seq_detalleVenta
+START WITH 1
+INCREMENT BY 1;
+
+
+--CRUD Detalle venta
+CREATE OR REPLACE PROCEDURE insertar_DetalleVenta(
+    p_idVenta        IN NUMBER,
+    p_idProducto     IN NUMBER,
+    p_Cantidad       IN NUMBER,
+    p_PrecioUnitario IN NUMBER,
+    p_Subtotal       IN NUMBER
+)AS
+BEGIN
+    INSERT INTO DetalleVenta(
+        idDetalleVenta,
+        idVenta,
+        idProducto,
+        Cantidad,
+        PrecioUnitario,
+        Subtotal
+    ) VALUES (
+        seq_detalleVenta.NEXTVAL,
+        p_idVenta,
+        p_idProducto,
+        p_Cantidad,
+        p_PrecioUnitario,
+        p_Subtotal
+    );
+
+    DBMS_OUTPUT.PUT_LINE('Detalle de venta insertado exitosamente');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+
+CREATE OR REPLACE PROCEDURE borrar_detalleVenta (
+    p_idDetalleVenta IN DetalleVenta.idDetalleVenta%TYPE
+) AS
+BEGIN
+    UPDATE DetalleVenta
+    SET Estado = 'I'
+    WHERE idDetalleVenta = p_idDetalleVenta;
+
+    IF SQL%ROWCOUNT = 0 THEN
+        DBMS_OUTPUT.PUT_LINE('No se encontró el detalle con ID ' || p_idDetalleVenta);
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Detalle de venta marcado como inactivo');
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+
+CREATE OR REPLACE PROCEDURE listar_detalleVenta AS
+    CURSOR c_detalles IS
+        SELECT idDetalleVenta, idVenta, idProducto, Cantidad, PrecioUnitario, Subtotal
+        FROM DetalleVenta
+        WHERE Estado = 'A'; 
+
+    v_idDetalleVenta  DetalleVenta.idDetalleVenta%TYPE;
+    v_idVenta         DetalleVenta.idVenta%TYPE;
+    v_idProducto      DetalleVenta.idProducto%TYPE;
+    v_Cantidad        DetalleVenta.Cantidad%TYPE;
+    v_PrecioUnitario  DetalleVenta.PrecioUnitario%TYPE;
+    v_Subtotal        DetalleVenta.Subtotal%TYPE;
+BEGIN
+    OPEN c_detalles;
+    LOOP
+        FETCH c_detalles INTO v_idDetalleVenta, v_idVenta, v_idProducto, v_Cantidad, v_PrecioUnitario, v_Subtotal;
+        EXIT WHEN c_detalles%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            'ID: ' || v_idDetalleVenta ||
+            ' | Venta: ' || v_idVenta ||
+            ' | Producto: ' || v_idProducto ||
+            ' | Cantidad: ' || v_Cantidad ||
+            ' | Precio Unitario: ' || v_PrecioUnitario ||
+            ' | Subtotal: ' || v_Subtotal
+        );
+    END LOOP;
+    CLOSE c_detalles;
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+
+CREATE OR REPLACE PROCEDURE modificar_detalleVenta (
+    p_idDetalleVenta  IN DetalleVenta.idDetalleVenta%TYPE,
+    p_idVenta         IN DetalleVenta.idVenta%TYPE,
+    p_idProducto      IN DetalleVenta.idProducto%TYPE,
+    p_Cantidad        IN DetalleVenta.Cantidad%TYPE,
+    p_PrecioUnitario  IN DetalleVenta.PrecioUnitario%TYPE,
+    p_Subtotal        IN DetalleVenta.Subtotal%TYPE
+) AS
+BEGIN
+    UPDATE DetalleVenta
+    SET
+        idVenta        = p_idVenta,
+        idProducto     = p_idProducto,
+        Cantidad       = p_Cantidad,
+        PrecioUnitario = p_PrecioUnitario,
+        Subtotal       = p_Subtotal
+    WHERE idDetalleVenta = p_idDetalleVenta;
+
+    IF SQL%ROWCOUNT = 0 THEN
+        DBMS_OUTPUT.PUT_LINE('No se encontró el detalle de venta con ID ' || p_idDetalleVenta);
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Detalle de venta modificado exitosamente');
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
