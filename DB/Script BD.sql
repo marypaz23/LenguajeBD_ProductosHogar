@@ -271,3 +271,158 @@ EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
+
+
+-- ========================
+-- FUNCIONES
+-- ========================
+
+-- Función 1
+CREATE OR REPLACE FUNCTION fn_precio_producto(p_idProducto NUMBER)
+RETURN NUMBER IS
+  v_precio NUMBER;
+BEGIN
+  SELECT Precio INTO v_precio FROM Producto WHERE idProductos = p_idProducto;
+  RETURN v_precio;
+END;
+/
+
+-- Función 2
+CREATE OR REPLACE FUNCTION fn_cantidad_producto(p_idProducto NUMBER)
+RETURN NUMBER IS
+  v_cantidad NUMBER;
+BEGIN
+  SELECT Cantidad INTO v_cantidad FROM Producto WHERE idProductos = p_idProducto;
+  RETURN v_cantidad;
+END;
+/
+
+-- Función 3
+CREATE OR REPLACE FUNCTION fn_nombre_completo_usuario(p_idUsuario NUMBER)
+RETURN VARCHAR2 IS
+  v_nombre VARCHAR2(100);
+BEGIN
+  SELECT Nombre || ' ' || Apellido INTO v_nombre FROM Usuario WHERE idUsuario = p_idUsuario;
+  RETURN v_nombre;
+END;
+/
+
+-- Función 4
+CREATE OR REPLACE FUNCTION fn_subtotal(p_precio NUMBER, p_cantidad NUMBER)
+RETURN NUMBER IS
+BEGIN
+  RETURN p_precio * p_cantidad;
+END;
+/
+
+-- Función 5
+CREATE OR REPLACE FUNCTION fn_producto_activo(p_idProducto NUMBER)
+RETURN VARCHAR2 IS
+  v_activo VARCHAR2(10);
+BEGIN
+  SELECT Activo INTO v_activo FROM Producto WHERE idProductos = p_idProducto;
+  RETURN v_activo;
+END;
+/
+
+-- Función 6
+CREATE OR REPLACE FUNCTION fn_nombre_proveedor(p_idProveedor NUMBER)
+RETURN VARCHAR2 IS
+  v_nombre VARCHAR2(45);
+BEGIN
+  SELECT NombreProveedor INTO v_nombre FROM Proveedor WHERE idProveedor = p_idProveedor;
+  RETURN v_nombre;
+END;
+/
+
+-- Función 7
+CREATE OR REPLACE FUNCTION fn_contar_productos_categoria(p_idCategoria NUMBER)
+RETURN NUMBER IS
+  v_total NUMBER;
+BEGIN
+  SELECT COUNT(*) INTO v_total FROM Producto WHERE idCategorias = p_idCategoria;
+  RETURN v_total;
+END;
+/
+
+-- Función 8
+CREATE OR REPLACE FUNCTION fn_total_factura(p_idFactura NUMBER)
+RETURN NUMBER IS
+  v_total NUMBER;
+BEGIN
+  SELECT Total INTO v_total FROM Factura WHERE idFactura = p_idFactura;
+  RETURN v_total;
+END;
+/
+
+-- Función 9
+CREATE OR REPLACE FUNCTION fn_estado_pedido(p_idPedido NUMBER)
+RETURN VARCHAR2 IS
+  v_estado VARCHAR2(50);
+BEGIN
+  SELECT estado INTO v_estado FROM Pedidos WHERE id_pedido = p_idPedido;
+  RETURN v_estado;
+END;
+/
+
+-- Función 10
+CREATE OR REPLACE FUNCTION fn_nombre_distrito(p_idDistrito NUMBER)
+RETURN VARCHAR2 IS
+  v_nombre VARCHAR2(45);
+BEGIN
+  SELECT nombreDistrito INTO v_nombre FROM Distritos WHERE idDistritos = p_idDistrito;
+  RETURN v_nombre;
+END;
+/
+
+-- Función 11
+CREATE OR REPLACE FUNCTION fn_nombre_canton(p_idCanton NUMBER)
+RETURN VARCHAR2 IS
+  v_nombre VARCHAR2(45);
+BEGIN
+  SELECT nombreCanton INTO v_nombre FROM Cantones WHERE idCantones = p_idCanton;
+  RETURN v_nombre;
+END;
+/
+
+-- Función 12
+CREATE OR REPLACE FUNCTION fn_nombre_provincia(p_idProvincia NUMBER)
+RETURN VARCHAR2 IS
+  v_nombre VARCHAR2(45);
+BEGIN
+  SELECT nombreProvincia INTO v_nombre FROM Provincias WHERE idProvincias = p_idProvincia;
+  RETURN v_nombre;
+END;
+/
+
+-- Función 13
+CREATE OR REPLACE FUNCTION fn_desc_entrega(p_idEntrega NUMBER)
+RETURN VARCHAR2 IS
+  v_desc VARCHAR2(45);
+BEGIN
+  SELECT DescripcionEntrega INTO v_desc FROM Entrega WHERE idEntrega = p_idEntrega;
+  RETURN v_desc;
+END;
+/
+
+-- Función 14
+CREATE OR REPLACE FUNCTION fn_es_admin(p_idUsuario NUMBER)
+RETURN BOOLEAN IS
+  v_rol VARCHAR2(45);
+BEGIN
+  SELECT tipoUsuario_idtipoUsuario INTO v_rol FROM Usuario WHERE idUsuario = p_idUsuario;
+  RETURN v_rol = 1; -- Asumiendo que 1 es admin
+END;
+/
+
+-- Función 15
+CREATE OR REPLACE FUNCTION fn_ventas_producto(p_idProducto NUMBER)
+RETURN NUMBER IS
+  v_cantidad NUMBER;
+BEGIN
+  SELECT COUNT(*) INTO v_cantidad FROM Venta WHERE idProductos = p_idProducto;
+  RETURN v_cantidad;
+END;
+/
+
+
